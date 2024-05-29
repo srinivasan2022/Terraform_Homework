@@ -10,9 +10,6 @@ locals {
 
   nsg_count = length(local.subnet_ids)
   nsg_names = [for i in range (local.nsg_count) : "subnet-nsg${i+1}"]
-
-  nsg_id = values({ for nsg_name , value in values(azurerm_network_security_group.nsg): nsg_name => value.id})
-  nsg_subnet = zipmap(local.subnet_ids , local.nsg_id)
   
 
 }
