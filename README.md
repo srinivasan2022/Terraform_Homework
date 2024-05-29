@@ -61,18 +61,12 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 
-# resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
-#  count = length(local.subnet_ids)
-#  subnet_id = local.subnet_ids[count.index]
-#  network_security_group_id = local.nsg_id[count.index]
-#   depends_on = [ azurerm_network_security_group.nsg ]
-# }
-
 resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
-  for_each = local.nsg_subnet
-  subnet_id = each.key
-  network_security_group_id = each.value
-  depends_on = [ azurerm_network_security_group.nsg ]
+  for_each = { for idx, subnet_id in flatten([for vnet in local.vnet_ids : vnet]) : idx => subnet_id }
+
+  subnet_id                 = each.value
+  network_security_group_id = azurerm_network_security_group.nsg[local.nsg_names[each.key]].id
+  depends_on = [ azurerm_network_security_group.nsg , azurerm_virtual_network.vnets]
 }
 ```
 
