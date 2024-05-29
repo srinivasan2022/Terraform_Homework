@@ -46,16 +46,16 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 
-# resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
-#  count = length(local.subnet_ids)
-#  subnet_id = local.subnet_ids[count.index]
-#  network_security_group_id = local.nsg_id[count.index]
-#   depends_on = [ azurerm_network_security_group.nsg ]
-# }
-
 resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
-  for_each = local.nsg_subnet
-  subnet_id = each.key
-  network_security_group_id = each.value
+ count = length(local.subnet_ids)
+ subnet_id = local.subnet_ids[count.index]
+ network_security_group_id = local.nsg_id[count.index]
   depends_on = [ azurerm_network_security_group.nsg ]
 }
+
+# resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
+#   for_each = local.nsg_subnet
+#   subnet_id = each.key
+#   network_security_group_id = each.value
+#   depends_on = [ azurerm_network_security_group.nsg ]
+# }
