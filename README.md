@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Terraform IaC Azure VNET, Subnet, NSG and Association automation.
+# Terraform IaC Azure VNET, Subnet, NSG and Association automation
 
 ### Steps :
 - 1.Use Data Block for Resource Group
