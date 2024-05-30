@@ -1,25 +1,24 @@
 <!-- BEGIN_TF_DOCS -->
-# Terraform IaC Azure VNET, Subnet, NSG and Association automation.
+# This is my Terraform Homework
 
-### Steps :
-- 1.First we have to create the Two Vnets.
-- 2.Each Vnet has Two subnets.
-- 3.The Subnet prefixes are calculated from Vnet range using cidrsubnet() function.
-- 4.Then , we create the Network Security Rule and Dynamic Rules for NSG.
-- 5.Finally , we have to associate the NSG for respective subnets.
+ Steps :
+ 1.First we have to create the Two Vnets.
+ 2.Each Vnet has Two subnets.
+ 3.The Subnet prefixes are calculated from Vnet range using cidrsubnet() function.
+ 4.Then , we create the Network Security Rule and Dynamic Rules for NSG.
+ 5.Finally , we have to associate the NSG for respective subnets.
 
- ## Architecture Diagram :
+ # Architecture Diagram :
 
  ![Homework](https://github.com/srinivasan2022/Terraform_Homework/assets/118502121/678b71fd-d90b-4ea5-8549-061aae72a3b8)
 
- ### Summary :
-
-
 ```hcl
+# 1.Use Data Block for Resource Group
 data "azurerm_resource_group" "rg" {
   name = "Seenu_TF_RG"
 }
 
+# 2.Creates Two Vnets with Address Space
 resource "azurerm_virtual_network" "vnets" {
   for_each = var.vnets
 
@@ -34,19 +33,21 @@ resource "azurerm_virtual_network" "vnets" {
     content {
       name = each.value.Subnets[subnet.key].name
       address_prefix = cidrsubnet(each.value.address_space , each.value.Subnets[subnet.key].newbits , each.value.Subnets[subnet.key].netnum)
+      # 3.Subnet prefixes are calculated from Vnet range using cidrsubnet() function 
     }
   }
   depends_on = [ data.azurerm_resource_group.rg ]
 
 }
 
+# 4.Creates the Network Security Group for Each Subnet
 resource "azurerm_network_security_group" "nsg" {       
   for_each =  toset(local.nsg_names)
   name = each.key
   resource_group_name = data.azurerm_resource_group.rg.name
   location = data.azurerm_resource_group.rg.location
 
-  dynamic "security_rule" {                                   
+  dynamic "security_rule" {   # 5.Creates the NSG Rule and Applied rules for all NSG                            
      for_each = { for rule in local.rules_csv : rule.name => rule }
      content {
       name                       = security_rule.value.name
@@ -63,7 +64,7 @@ resource "azurerm_network_security_group" "nsg" {
   depends_on = [ azurerm_virtual_network.vnets ]
 }
 
-
+# 6.Associate the NSG for respective Subnets
 resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
   for_each = { for idx, subnet_id in flatten([for vnet in local.vnet_ids : vnet]) : idx => subnet_id }
 
@@ -72,13 +73,6 @@ resource "azurerm_subnet_network_security_group_association" "nsg_ass" {
   depends_on = [ azurerm_network_security_group.nsg , azurerm_virtual_network.vnets]
 }
 
-# { for idx, subnet_id in flatten([for vnet in local.vnet_ids : vnet]) : idx => subnet_id } -->
-# {
-#   "0" = "/subscriptions/bd7a3996-9bc3-4c7a-8038-220d4ea0cea8/resourceGroups/Seenu_TF_RG/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet1"
-#   "1" = "/subscriptions/bd7a3996-9bc3-4c7a-8038-220d4ea0cea8/resourceGroups/Seenu_TF_RG/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet2"
-#   "2" = "/subscriptions/bd7a3996-9bc3-4c7a-8038-220d4ea0cea8/resourceGroups/Seenu_TF_RG/providers/Microsoft.Network/virtualNetworks/vnet2/subnets/subnet1"
-#   "3" = "/subscriptions/bd7a3996-9bc3-4c7a-8038-220d4ea0cea8/resourceGroups/Seenu_TF_RG/providers/Microsoft.Network/virtualNetworks/vnet2/subnets/subnet2"
-# }
 ```
 
 <!-- markdownlint-disable MD033 -->
