@@ -13,6 +13,17 @@
 
  ![Homework](https://github.com/srinivasan2022/Terraform_Homework/assets/118502121/678b71fd-d90b-4ea5-8549-061aae72a3b8)
 
+ ### Summary :
+#### provider.tf : 
+The Terraform code configures the Azure Resource Manager (AzureRM) provider, ensuring compatibility with version 3.0.2, and requires Terraform version 1.1.0 or higher. It initializes the Azure provider to manage Azure resources within Terraform scripts.
+#### variable.tf
+The code defines two variables for a Terraform configuration. The vnets variable is a map of virtual networks, each with an address space and a list of subnets specified by their name, newbits, and netnum. The rules_file variable is a string that defaults to "rules.csv", likely referencing an external file containing rules for further configuration.
+#### main.tf
+The provided Terraform code sets up Azure virtual networks, network security groups (NSGs), and their associations using a resource group named "Seenu_TF_RG." The azurerm_virtual_network resource creates multiple virtual networks based on the vnets variable, each with dynamic subnets. The azurerm_network_security_group resource creates multiple NSGs, applying dynamic security rules parsed from a local CSV file. Finally, the azurerm_subnet_network_security_group_association resource associates the NSGs with the subnets, using a flattened list of subnet IDs and a local mapping of NSG names.
+#### locals.tf
+The provided Terraform code defines local values to manage the configuration of Azure resources. It reads and decodes a CSV file of security rules, generates a list of virtual network IDs and subnet IDs, and creates a list of NSG names based on the number of subnets. The nsg_names list dynamically generates names for the NSGs to be associated with each subnet.
+
+
 ```hcl
 # 1.Use Data Block for Resource Group
 data "azurerm_resource_group" "rg" {
