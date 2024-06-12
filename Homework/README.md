@@ -11,7 +11,7 @@
 
  ## Architecture Diagram :
 
- ![Homework](https://github.com/srinivasan2022/Terraform_Homework/assets/118502121/678b71fd-d90b-4ea5-8549-061aae72a3b8)
+ ![Homework](https://github.com/srinivasan2022/Terraform_Homework/assets/118502121/120da306-8492-46e8-ba99-927a11f25815)
 
  ### Summary :
 #### provider.tf : 
